@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "author": "ECU Simulator",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 4.84, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot1", "top": -97.3, "left": -240.2, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot2", "top": 27.5, "left": -240.2, "attrs": {} },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn1",
+      "top": 140,
+      "left": -200,
+      "attrs": { "color": "red" }
+    },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd1",
+      "top": -130,
+      "left": 200,
+      "attrs": { "pins": "i2c" }
+    },
+    { "type": "wokwi-led", "id": "led1", "top": 90, "left": 230, "attrs": { "color": "red" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": 150, "left": 220, "attrs": { "value": "220" } },
+    { "type": "wokwi-buzzer", "id": "bz1", "top": 200, "left": 230, "attrs": {} },
+    {
+      "type": "wokwi-text",
+      "id": "t_esp",
+      "top": -45,
+      "left": -20,
+      "attrs": { "text": "ESP32 = ECU1 Engine + ECU2 Dashboard" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_pot1",
+      "top": -135,
+      "left": -250,
+      "attrs": { "text": "POT1 = Throttle Pedal (GPIO34)" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_pot2",
+      "top": -15,
+      "left": -250,
+      "attrs": { "text": "POT2 = Coolant Temp Sensor (GPIO35)" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_btn",
+      "top": 115,
+      "left": -220,
+      "attrs": { "text": "BUTTON = Brake Pedal (GPIO25)" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_lcd",
+      "top": -155,
+      "left": 190,
+      "attrs": { "text": "LCD1602 (I2C) = Dashboard Display" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_led",
+      "top": 62,
+      "left": 215,
+      "attrs": { "text": "LED = Warning Lamp (GPIO2)" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_res",
+      "top": 172,
+      "left": 215,
+      "attrs": { "text": "220 ohm = LED limiter" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_bz",
+      "top": 275,
+      "left": 215,
+      "attrs": { "text": "BUZZER = Audible Alarm (GPIO4)" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t_uart",
+      "top": 300,
+      "left": -230,
+      "attrs": { "text": "UART LINK: ECU1 TX17 -> ECU2 RX19  |  ECU2 TX18 -> ECU1 RX16" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "pot1:SIG", "esp:34", "green", [] ],
+    [ "pot1:VCC", "esp:3V3", "red", [] ],
+    [ "pot1:GND", "esp:GND.1", "black", [] ],
+    [ "pot2:SIG", "esp:35", "green", [] ],
+    [ "pot2:VCC", "esp:3V3", "red", [] ],
+    [ "pot2:GND", "esp:GND.1", "black", [] ],
+    [ "btn1:1.l", "esp:25", "orange", [] ],
+    [ "btn1:2.l", "esp:GND.1", "black", [] ],
+    [ "lcd1:GND", "esp:GND.2", "black", [] ],
+    [ "lcd1:VCC", "esp:5V", "red", [] ],
+    [ "lcd1:SDA", "esp:21", "blue", [] ],
+    [ "lcd1:SCL", "esp:22", "purple", [] ],
+    [ "esp:2", "r1:1", "green", [] ],
+    [ "r1:2", "led1:A", "green", [] ],
+    [ "led1:C", "esp:GND.2", "black", [] ],
+    [ "bz1:1", "esp:GND.2", "black", [] ],
+    [ "bz1:2", "esp:4", "gold", [] ],
+    [ "esp:17", "esp:19", "cyan", [] ],
+    [ "esp:18", "esp:16", "magenta", [] ]
+  ],
+  "dependencies": {}
+}
