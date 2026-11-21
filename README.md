@@ -50,15 +50,75 @@ A simulated automotive communication system in which two Electronic Control Unit
 - Type `c` in the Serial Monitor to cut or restore the link at run time
 
 ## Architecture
+## System Architecture
 
-```
- Throttle POT (GPIO34) --+
- Coolant POT  (GPIO35) --+--> [ ECU 1: Engine ] --UART frame (115200 8N1)--> [ ECU 2: Dashboard ] --> LCD1602 (I2C)
- Brake button (GPIO25) --+      Serial2 TX=17                RX=19 Serial1                       --> Warning LED (GPIO2)
-                                       RX=16  <---- TX=18                                        --> Buzzer (GPIO4)
+The proposed system consists of two logical Electronic Control Units (ECUs) implemented on a single ESP32 microcontroller using FreeRTOS tasks. The Engine Control Unit collects vehicle parameters and transmits structured data frames through UART. The Dashboard Control Unit receives, validates and processes the frames to monitor vehicle conditions and generate appropriate warnings.
+
+### Architecture Diagram
+
+```mermaid
+flowchart TB
+
+    subgraph INPUTS["VEHICLE INPUTS"]
+        A["Throttle Position<br/>Potentiometer"]
+        B["Coolant Temperature<br/>Potentiometer"]
+        C["Brake Pedal<br/>Push Button"]
+    end
+
+    subgraph ESP["ESP32 MICROCONTROLLER"]
+        
+        subgraph ECU1["ECU 1 - ENGINE CONTROL UNIT"]
+            D["Sensor Acquisition"]
+            E["RPM and Speed Calculation"]
+            F["Vehicle Data Processing"]
+            G["UART Data Frame Generation"]
+            
+            D --> E --> F --> G
+        end
+
+        subgraph ECU2["ECU 2 - DASHBOARD CONTROL UNIT"]
+            H["UART Frame Reception"]
+            I["Frame Parsing and Validation"]
+            J["Checksum Verification"]
+            K["Fault Detection and Monitoring"]
+            
+            H --> I --> J --> K
+        end
+
+        G <-->|"Bidirectional UART Communication<br/>115200 Baud, 8N1"| H
+    end
+
+    subgraph OUTPUTS["DASHBOARD OUTPUTS"]
+        L["LCD1602 Display<br/>RPM, Speed, Temperature"]
+        M["Warning LED"]
+        N["Buzzer Alarm"]
+    end
+
+    A --> D
+    B --> D
+    C --> D
+
+    K --> L
+    K --> M
+    K --> N
+
+    O["Communication Loss Detection<br/>500 ms Timeout"] -.-> K
 ```
 
-> **Note on the simulation:** Wokwi's browser editor runs one microcontroller per project, so both ECUs run on **one ESP32** as two FreeRTOS tasks (one per core). They are connected through two separate hardware UARTs wired to each other, so the data path behaves like a link between two independent ECUs.
+### Internal UART Configuration
+
+| Parameter | Configuration |
+|---|---|
+| Communication Protocol | UART |
+| Baud Rate | 115200 |
+| Data Format | 8N1 |
+| ECU 1 TX | GPIO 17 |
+| ECU 1 RX | GPIO 16 |
+| ECU 2 TX | GPIO 18 |
+| ECU 2 RX | GPIO 19 |
+| Communication | Bidirectional |
+
+**Implementation Note:** Both ECUs are simulated on one ESP32 using separate FreeRTOS tasks and hardware UART interfaces. The UART TX and RX connections establish an internal communication link between the two logical ECUs.
 
 ## Hardware (simulated)
 
